@@ -1,0 +1,5 @@
+numactl --cpunodebind=0 --membind=0 /home/wzh/rocksdb/build/db_bench --benchmarks=fillrandom,readrandom --db=/mnt/pmem0.1/pm_test --num=1310720 --value_size=65536 --write_buffer_size=52428800 --target_file_size_base=134217728 --threads=1 --statistics >> /home/wzh/rocksdb/output/Rnd_NVM_64K
+Set seed to 1687438337161478 because --seed was 0
+Initializing RocksDB Options from the specified file
+Initializing RocksDB Options from command-line flags
+Integrated BlobDB: blob cache disabled

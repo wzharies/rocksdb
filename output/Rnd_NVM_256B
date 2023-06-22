@@ -1,0 +1,1 @@
+numactl --cpunodebind=0 --membind=0 /home/wzh/rocksdb/build/db_bench --benchmarks=fillrandom,readrandom --db=/mnt/pmem0.1/pm_test --num=335544320 --value_size=256 --write_buffer_size=52428800 --target_file_size_base=134217728 --threads=1 --statistics -compression_type=none >> /home/wzh/rocksdb/output/Rnd_NVM_256B

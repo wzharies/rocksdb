@@ -1,0 +1,26 @@
+numactl --cpunodebind=0 --membind=0 /home/wzh/rocksdb/ycsbc/ycsbc /home/wzh/rocksdb/ycsbc/input/1KB_ALL >> /home/wzh/rocksdb/output/YCSB_1KB
+---- dbname:rocksdb  dbpath:/mnt/pmem0.1/pm_test ----
+dbname:rocksdb
+dboption:1
+dbpath:/mnt/pmem0.1/pm_test
+dbstatistics:true
+dbwaitforbalance:false
+fieldcount:1
+fieldlength:1024
+flushssd:false
+insertproportion:0
+latency:true
+load:true
+operationcount:100000
+pmpath:/mnt/pmem0.1/pm_test
+readallfields:true
+readproportion:0.5
+recordcount:80000000
+requestdistribution:zipfian
+run:false
+scanproportion:0
+threadcount:1
+timeseries:false
+updateproportion:0.5
+workload:com.yahoo.ycsb.workloads.CoreWorkload
+----------------------------------------

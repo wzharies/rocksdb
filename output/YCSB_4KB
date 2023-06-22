@@ -1,0 +1,2 @@
+numactl --cpunodebind=0 --membind=0 /home/wzh/rocksdb/ycsbc/ycsbc /home/wzh/rocksdb/ycsbc/input/4KB_ALL >> /home/wzh/rocksdb/output/YCSB_4KB
+Unknown database name leveldb
