@@ -317,6 +317,8 @@ DEFINE_bool(reverse_iterator, false,
 
 DEFINE_bool(auto_prefix_mode, false, "Set auto_prefix_mode for seek benchmark");
 
+DEFINE_bool(throughput, false, "Output throughput");
+
 DEFINE_int64(max_scan_distance, 0,
              "Used to define iterate_upper_bound (or iterate_lower_bound "
              "if FLAGS_reverse_iterator is set to true) when value is nonzero");
@@ -5114,6 +5116,11 @@ class Benchmark {
     size_t id = 0;
     int64_t num_range_deletions = 0;
 
+    int64_t bytes_this_batch = 0;
+    auto start_time = std::chrono::steady_clock::now();
+    auto last_report_time = start_time;
+    long long bytes_this_second = 0;
+
     while ((num_per_key_gen != 0) && !duration.Done(entries_per_batch_)) {
       if (duration.GetStage() != stage) {
         stage = duration.GetStage();
@@ -5147,7 +5154,6 @@ class Benchmark {
 
       batch.Clear();
       int64_t batch_bytes = 0;
-
       for (int64_t j = 0; j < entries_per_batch_; j++) {
         int64_t rand_num = 0;
         if ((write_mode == UNIQUE_RANDOM) && (p > 0.0)) {
@@ -5366,6 +5372,21 @@ class Benchmark {
         // Not stacked BlobDB
         s = db_with_cfh->db->Write(write_options_, &batch);
       }
+
+      if(FLAGS_throughput){
+        bytes_this_second += batch_bytes;
+        auto now = std::chrono::steady_clock::now();
+        auto cur_elapsed_time = std::chrono::duration_cast<std::chrono::milliseconds>(now - start_time).count();
+        auto last_elapsed_time = std::chrono::duration_cast<std::chrono::milliseconds>(last_report_time - start_time).count();
+        auto diff_time = std::chrono::duration_cast<std::chrono::milliseconds>(now - last_report_time).count();
+        if (cur_elapsed_time / 1000 != last_elapsed_time / 1000) {
+          double throughput = bytes_this_second * 1.0 / 1024 / 1024 / (diff_time / 1000.0);
+          std::cout << "Throughput " << cur_elapsed_time / 1000 << " second: " << throughput << " MB per second" << std::endl;
+          last_report_time = now;
+          bytes_this_second = 0;
+        }
+      }
+
       thread->stats.FinishedOps(db_with_cfh, db_with_cfh->db,
                                 entries_per_batch_, kWrite);
       if (FLAGS_sine_write_rate) {

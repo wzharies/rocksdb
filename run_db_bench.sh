@@ -118,6 +118,7 @@ RUN_DB_BENCH() {
                 --threads=$num_thread \
                 --statistics \
                 -compression_type=none \
+                -throughput=$throughput \
                 "
     cmd="$APP_PREFIX $db_bench/db_bench $parameters >> $output_file"
     echo $cmd >> $output_file
@@ -174,7 +175,7 @@ MAKE() {
     mkdir "$db_bench"
   fi
   cd $db_bench
-  cmake --build $db_path/build --config RelWithDebInfo --target all --
+  cmake --build $db_path/build --config Release --target all --
   cd ..
   cd $ycsb_path
   #make clean
@@ -336,7 +337,7 @@ SET_OUTPUT_PATH
 
 echo "chapter 4.1"
 DB_BENCH_TEST
-# DB_BENCH_THROUGHPUT
+DB_BENCH_THROUGHPUT
 
 echo "chapter 4.2"
 YCSB_TEST
