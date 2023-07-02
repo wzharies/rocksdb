@@ -13,6 +13,7 @@ ycsb_path=$db_path/ycsbc
 
 sata_path=/tmp/pm_test
 ssd_path=/media/nvme1/pm_test
+# pm_path=ssd_path
 pm_path=/mnt/pmem0.1/pm_test
 # leveldb_path=/tmp/leveldb-wzh
 leveldb_path=$pm_path
@@ -28,14 +29,17 @@ benchmarks="overwrite,readrandom,readseq"
 ycsb_input=1KB_ALL
 
 num_thread=1
+key_size=8
 value_size=1024
 num_kvs=$((10*$MB))
-write_buffer_size=$((50*$MB))
+write_buffer_size=$((64*$MB))
 max_file_size=$((128*$MB))
 pm_size=$((180*$GB))
 use_pm=1
 flush_ssd=0
 throughput=0
+perf_level=1
+bloom_bits=16
 
 WRITE80G_FLUSHSSD() {
     leveldb_path=$ssd_path;
@@ -117,8 +121,11 @@ RUN_DB_BENCH() {
                 --target_file_size_base=$max_file_size \
                 --threads=$num_thread \
                 --statistics \
+                -key_size=$key_size \
                 -compression_type=none \
+                -bloom_bits=$bloom_bits \
                 -throughput=$throughput \
+                -perf_level=$perf_level \
                 "
     cmd="$APP_PREFIX $db_bench/db_bench $parameters >> $output_file"
     echo $cmd >> $output_file
@@ -185,7 +192,7 @@ MAKE() {
 
 DB_BENCH_TEST() {
     echo "------------db_bench------------"
-    benchmarks="fillrandom,readrandom"
+    benchmarks="fillrandom,stats,readrandom,stats"
     echo "------256B random write/read-----"
     output_file=$output_path/Rnd_NVM_256B
     WRITE80G-256B
@@ -212,7 +219,7 @@ DB_BENCH_TEST() {
     RUN_DB_BENCH
 
 
-    benchmarks="fillseq,readseq"
+    benchmarks="fillseq,stats,readseq,stats"
     echo "------256B random write/read-----"
     output_file=$output_path/Seq_NVM_256B
     WRITE80G-256B
@@ -243,7 +250,7 @@ DB_BENCH_TEST() {
 
 DB_BENCH_THROUGHPUT() {
     echo "------------db_bench------------"
-    benchmarks="fillrandom"
+    benchmarks="fillrandom,stats"
 
     echo "------1K random write/read-----"
     output_file=$output_path/Throughput_Rnd_NVM_1KB
@@ -261,7 +268,7 @@ DB_BENCH_THROUGHPUT() {
 
 DB_BENCH_TEST_FLUSHSSD() {
     echo "----------db_bench_flushssd----------"
-    benchmarks="fillrandom,readrandom"
+    benchmarks="fillrandom,stats,readrandom,stats"
     echo "---8GNVM--4KB random write/read---"
     output_file=$output_path/NVM8G_Rnd_4K
     WRITE80G_8GNVM
@@ -332,22 +339,46 @@ YCSB_TEST_SSD(){
     cd ..
 }
 
+TIME_ANALYSIS(){
+    echo "----------db_bench analysis----------"
+    benchmarks="fillrandom,readwhilewriting,stats"
+    perf_level=5
+
+    echo "---80G--4KB readwhilewriting with filter---"
+    output_file=$output_path/TIME_ANALYSIS_80G_4K_R_W_WithFilter
+    value_size=$((4*$KB))
+    num_kvs=$((40*$GB / $value_size))
+    # WRITE80G-4K
+    RUN_DB_BENCH
+
+    echo "---80G--4KB readwhilewriting without filters---"
+    output_file=$output_path/TIME_ANALYSIS_80G_4K_R_W_WithoutFilter
+    value_size=$((4*$KB))
+    num_kvs=$((40*$GB / $value_size))
+    bloom_bits=-1
+    # WRITE80G-4K
+    # RUN_DB_BENCH
+
+    perf_level=1
+    CLEAN_DB
+}
+
 MAKE
 SET_OUTPUT_PATH
 
 echo "chapter 4.1"
 DB_BENCH_TEST
-DB_BENCH_THROUGHPUT
+# DB_BENCH_THROUGHPUT
 
-echo "chapter 4.2"
-YCSB_TEST
-YCSB_TEST_LATENCY
+# echo "chapter 4.2"
+# YCSB_TEST
+# YCSB_TEST_LATENCY
 
-echo "chapter 4.3"
-# DB_BENCH_TEST_FLUSHSSD
-# YCSB_TEST_SSD
 
-CLEAN_DB
+# echo "chapter 4.4"
+# TIME_ANALYSIS
+
+# CLEAN_DB
 # sudo cp build/libleveldb.a /usr/local/lib/
 # sudo cp -r include/leveldb /usr/local/include/
 # -exec break __sanitizer::Die
