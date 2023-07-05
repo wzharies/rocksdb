@@ -1,2 +1,0 @@
-numactl --cpunodebind=0 --membind=0 /home/wzh/rocksdb/ycsbc/ycsbc /home/wzh/rocksdb/ycsbc/input/1KB_ALL_Latency >> /home/wzh/rocksdb/output/YCSB_1KB_Latency
-Unknown database name leveldb

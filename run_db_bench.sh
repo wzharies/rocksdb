@@ -192,35 +192,35 @@ MAKE() {
 
 DB_BENCH_TEST() {
     echo "------------db_bench------------"
-    benchmarks="fillrandom,stats,readrandom,stats"
-    echo "------256B random write/read-----"
-    output_file=$output_path/Rnd_NVM_256B
-    WRITE80G-256B
-    RUN_DB_BENCH
+    # benchmarks="fillrandom,stats,readrandom,stats"
+    # echo "------256B random write/read-----"
+    # output_file=$output_path/Rnd_NVM_256B
+    # WRITE80G-256B
+    # RUN_DB_BENCH
 
-    echo "------1KB random write/read-----"
-    output_file=$output_path/Rnd_NVM_1K
-    WRITE80G
-    RUN_DB_BENCH
+    # echo "------1KB random write/read-----"
+    # output_file=$output_path/Rnd_NVM_1K
+    # WRITE80G
+    # RUN_DB_BENCH
 
-    echo "------4KB random write/read-----"
-    output_file=$output_path/Rnd_NVM_4K
-    WRITE80G-4K
-    RUN_DB_BENCH
+    # echo "------4KB random write/read-----"
+    # output_file=$output_path/Rnd_NVM_4K
+    # WRITE80G-4K
+    # RUN_DB_BENCH
 
-    echo "------16KB random write/read-----"
-    output_file=$output_path/Rnd_NVM_16K
-    WRITE80G-16K
-    RUN_DB_BENCH
+    # echo "------16KB random write/read-----"
+    # output_file=$output_path/Rnd_NVM_16K
+    # WRITE80G-16K
+    # RUN_DB_BENCH
 
-    echo "------64KB random write/read-----"
-    output_file=$output_path/Rnd_NVM_64K
-    WRITE80G-64K
-    RUN_DB_BENCH
+    # echo "------64KB random write/read-----"
+    # output_file=$output_path/Rnd_NVM_64K
+    # WRITE80G-64K
+    # RUN_DB_BENCH
 
 
     benchmarks="fillseq,stats,readseq,stats"
-    echo "------256B random write/read-----"
+    echo "------256B sequential write/read-----"
     output_file=$output_path/Seq_NVM_256B
     WRITE80G-256B
     RUN_DB_BENCH
@@ -368,15 +368,14 @@ SET_OUTPUT_PATH
 
 echo "chapter 4.1"
 DB_BENCH_TEST
-# DB_BENCH_THROUGHPUT
+DB_BENCH_THROUGHPUT
 
-# echo "chapter 4.2"
-# YCSB_TEST
-# YCSB_TEST_LATENCY
+echo "chapter 4.2"
+YCSB_TEST
+YCSB_TEST_LATENCY
 
-
-# echo "chapter 4.4"
-# TIME_ANALYSIS
+echo "chapter 4.4"
+TIME_ANALYSIS
 
 # CLEAN_DB
 # sudo cp build/libleveldb.a /usr/local/lib/
