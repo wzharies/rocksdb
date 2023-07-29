@@ -12,7 +12,7 @@ db_include=$db_path/include
 ycsb_path=$db_path/ycsbc
 
 sata_path=/tmp/pm_test
-ssd_path=/media/nvme1/pm_test
+ssd_path=/media/nvme/pm_test
 # pm_path=ssd_path
 pm_path=/mnt/pmem0.1/pm_test
 # leveldb_path=/tmp/leveldb-wzh
@@ -363,19 +363,41 @@ TIME_ANALYSIS(){
     CLEAN_DB
 }
 
+function SMALL_VALUE_TEST(){
+    echo "------data size analysis-------"
+    benchmarks="fillrandom,readrandom,stats"
+    num_kvs=$((100*$MB))
+
+    echo "---- key100M_8B----"
+    output_file=$output_path/key100M_8B
+    value_size=$((8))
+    RUN_DB_BENCH
+
+    echo "---- key100M_32B----"
+    output_file=$output_path/key100M_32B
+    value_size=$((32))
+    RUN_DB_BENCH
+
+    echo "---- key100M_128B----"
+    output_file=$output_path/key100M_128B
+    value_size=$((128))
+    RUN_DB_BENCH
+}
+
 MAKE
 SET_OUTPUT_PATH
 
-echo "chapter 4.1"
-DB_BENCH_TEST
-DB_BENCH_THROUGHPUT
+# echo "chapter 4.1"
+# DB_BENCH_TEST
+# DB_BENCH_THROUGHPUT
+# SMALL_VALUE_TEST
 
-echo "chapter 4.2"
-YCSB_TEST
-YCSB_TEST_LATENCY
+# echo "chapter 4.2"
+# YCSB_TEST
+# YCSB_TEST_LATENCY
 
-echo "chapter 4.4"
-TIME_ANALYSIS
+# echo "chapter 4.4"
+# TIME_ANALYSIS
 
 # CLEAN_DB
 # sudo cp build/libleveldb.a /usr/local/lib/
